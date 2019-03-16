@@ -1,16 +1,10 @@
 package com.example.wifiserver;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.sql.SQLException;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class knn {
-    /*private double INF = 10000;
-    public String position;//储存位置,用于返回最后位置。
-    private Map<String,Integer> wifiinfo_sql;
-    private List<String> map_sql;*/
+class knn {
     private String [] position;//储存前四个最佳位置。
     private List  [] position_wifiinfo;//储存上述四个房间的WiFi信号
     private double [] costFunction = new double[4];//代价函数
@@ -28,6 +22,7 @@ public class knn {
         }
         k = KNN_realize();
     }
+
     private void initizlize(Map<String,Integer> map) throws SQLException{
         position = new String[4];
         Comparator<Map.Entry<String, Integer>> valueComparator = new Comparator<Map.Entry<String,Integer>>() {
@@ -60,17 +55,7 @@ public class knn {
         return www;
     }
 
-    /*private Map<String,Integer> get_position_wifiinfo(String pos){
-        Map<String,Integer> mmap = new HashMap<>();
-        List<wifi_info> wifiInfos = rr.findAllByPosition_id(pos);
-        for(wifi_info wifiInfos1 : wifiInfos){
-            mmap.put(wifiInfos1.getBssid(),wifiInfos1.getLevel());
-        }
-        return mmap;
-    }*/
-
     private String KNN_realize(){
-        //knn实现算法
         wifi_get data;
         String bssid;
         int level,level_temp;
@@ -97,25 +82,5 @@ public class knn {
         }
         return position[cost_id];
     }
-        /*position=null;
-        double cost=INF;
-        double level_sum=0;
-        double level_sql,level_scan;//信号强度
-        for(String pos:map_sql){
-            level_sum=0;
-            wifiinfo_sql = get_position_wifiinfo(pos);
-            for(String key:wifiinfo_sql.keySet()){
-                if(wifiinfo_scan.containsKey(key)){
-                    level_sql=wifiinfo_sql.get(key);
-                    level_scan=wifiinfo_scan.get(key);
-                    level_sum += Math.pow(level_scan-level_sql,2)*(level_sql/100);
-                }
-            }
-            if(cost>level_sum){
-                cost=level_sum;
-                position=pos;
-            }
-        }
-        return position;*/
-    }
+}
 

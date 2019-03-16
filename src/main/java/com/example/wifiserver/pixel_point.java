@@ -10,6 +10,7 @@ public class pixel_point {
     private String position;
     private int x_p;
     private int y_p;
+    private int floor;
     void setId(Integer id){
         this.id =id;
     }
@@ -22,6 +23,9 @@ public class pixel_point {
     void setY_p(int y_p){
         this.y_p = y_p;
     }
+    public void setFloor(int floor) {
+        this.floor = floor;
+    }
     Integer getId(){
         return this.id;
     }
@@ -33,5 +37,8 @@ public class pixel_point {
     }
     int getY_p(){
         return this.y_p;
+    }
+    public int getFloor() {
+        return floor;
     }
 }
