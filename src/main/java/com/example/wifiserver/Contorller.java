@@ -1,11 +1,9 @@
 package com.example.wifiserver;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import java.sql.SQLException;
 import java.util.*;
 
@@ -21,6 +19,7 @@ public class Contorller {
     private friendshipResp ff;
 
     @PostMapping("/pos")
+    @Transactional
     public @ResponseBody position_info getpos(@RequestBody List<wifi_get> wg) throws SQLException {
        String location;
         position_info position_info = new position_info(0,0,0);
@@ -53,7 +52,6 @@ public class Contorller {
             try {
                 location = new knn(waftinfo,map,ww).k;
                 position_info = new position_info(p_pR.findByPosition(location).getFloor(),p_pR.findByPosition(location).getX_p(),p_pR.findByPosition(location).getY_p());
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -154,7 +152,7 @@ public class Contorller {
     public @ResponseBody Responsess update_position(@RequestBody Uuser uuser){
         Responsess responsess = null;
         if(uu.existsByName(uuser.getName())&&uu.existsByNameAndPassword(uuser.getName(),uuser.getPassword())){
-            if((uuser.getX_p() != 0) && (uuser.getY_p() != 0)){
+            if((uuser.getX_p() != 0) && (uuser.getY_p() != 0)&&(uuser.getFloor() !=0)){
                 uu.update_position(uuser.getX_p(),uuser.getY_p(),uuser.getFloor(),uuser.getName());
                 responsess = new Responsess("ok","位置信息更新成功");
             }else{
@@ -197,12 +195,24 @@ public class Contorller {
         return  responsess;
     }
 
+    @GetMapping("/get_friendList")   /*获取好友列表*/
+    public @ResponseBody List<Uuser> get_friendList(String name){
+        List<friendship> lf = ff.findAllByUuser(name);
+        List<Uuser> lu = new ArrayList<>();
+        for(friendship fs : lf){
+            Uuser usser = new Uuser();
+            usser.setName(fs.getFriend());
+            lu.add(usser);
+        }
+        return lu;
+    }
+
     @GetMapping("/get_friend_position")   /*获取好友位置*/
     public @ResponseBody position_info get_friend_position(String uuser,String friend){
         position_info pos_info = new position_info(0,0,0);
         if(ff.existsByUuserAndFriend(uuser,friend)&&uu.findByName(friend).getShare_position()){
             Uuser frid = uu.findByName(friend);
-            pos_info = new position_info(frid.getX_p(),frid.getY_p(),frid.getFloor());
+            pos_info = new position_info(frid.getFloor(),frid.getX_p(),frid.getY_p());
         }
         return  pos_info;
     }
