@@ -15,6 +15,7 @@ public class Uuser {
     private String password;
     private int x_p;
     private int y_p;
+    private int floor;
     private boolean share_position;
     Uuser(String name,String password){
         this.name = name;
@@ -31,6 +32,10 @@ public class Uuser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setFloor(int floor) {
+        this.floor = floor;
     }
 
     public void setY_p(int y_p) {
@@ -67,6 +72,10 @@ public class Uuser {
 
     public boolean getShare_position(){
         return share_position;
+    }
+
+    public int getFloor() {
+        return floor;
     }
 }
 

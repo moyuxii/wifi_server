@@ -17,6 +17,8 @@ public class Contorller {
     private wifi_infoResp ww;
     @Autowired
     private UserResp uu;
+    @Autowired
+    private friendshipResp ff;
 
     @PostMapping("/pos")
     public @ResponseBody position_info getpos(@RequestBody List<wifi_get> wg) throws SQLException {
@@ -60,12 +62,9 @@ public class Contorller {
         return position_info;
     }
 
-    @GetMapping("/get_pixel")
-    public @ResponseBody String get_pixel(String position){
-        String pop = position;
-        pixel_point p_pt ;
-        p_pt = p_pR.findByPosition(pop);
-        return p_pt.getX_p()+","+p_pt.getY_p();
+    @GetMapping("/get_pixel")  /*获取像素点*/
+    public @ResponseBody position_info get_pixel(String position){
+       return new position_info(p_pR.findByPosition(position).getFloor(),p_pR.findByPosition(position).getX_p(),p_pR.findByPosition(position).getY_p());
     }
 
     @PostMapping("/Login")  /*注册*/
@@ -74,6 +73,7 @@ public class Contorller {
         if(!uu.existsByName(uuser.getName())){
             uuser.setX_p(0);
             uuser.setY_p(0);
+            uuser.setFloor(0);
             uuser.setShare_position(false);
             uu.save(uuser);
             resopnses = new Responsess("ok","注册成功");
@@ -155,7 +155,7 @@ public class Contorller {
         Responsess responsess = null;
         if(uu.existsByName(uuser.getName())&&uu.existsByNameAndPassword(uuser.getName(),uuser.getPassword())){
             if((uuser.getX_p() != 0) && (uuser.getY_p() != 0)){
-                uu.update_position(uuser.getX_p(),uuser.getY_p(),uuser.getName());
+                uu.update_position(uuser.getX_p(),uuser.getY_p(),uuser.getFloor(),uuser.getName());
                 responsess = new Responsess("ok","位置信息更新成功");
             }else{
                 responsess = new Responsess("error","位置信息更新失败");
@@ -166,5 +166,44 @@ public class Contorller {
         return responsess;
     }
 
+    @GetMapping("/add_friend")   /*加好友*/
+    public @ResponseBody Responsess add_friend(String uuser,int friend_id,String friend){
+        Responsess responsess = null;
+        if(uu.existsByName(uuser)&&uu.existsByName(friend)&&uu.existsByIdAndName(friend_id,friend)){
+            if(ff.existsByUuserAndFriend(uuser,friend)){
+                responsess = new Responsess("error","该用户已是您的好友");
+            }else{
+                ff.save(new friendship(uuser,friend));
+                ff.save(new friendship(friend,uuser));
+                responsess = new Responsess("ok","成功与"+friend+"成为好友");
+            }
+        }else{
+            responsess = new Responsess("error","操作失败");
+        }
+        return  responsess;
+    }
 
+    @GetMapping("/del_friend")   /*删好友*/
+    @Transactional
+    public @ResponseBody Responsess del_friend(String uuser,String friend){
+        Responsess responsess = null;
+        if(ff.existsByUuserAndFriend(uuser,friend)){
+            ff.deleteByUuserAndFriend(uuser,friend);
+            ff.deleteByUuserAndFriend(friend,uuser);
+            responsess = new Responsess("ok","好友删除成功");
+        }else{
+            responsess = new Responsess("error","操作失败");
+        }
+        return  responsess;
+    }
+
+    @GetMapping("/get_friend_position")   /*获取好友位置*/
+    public @ResponseBody position_info get_friend_position(String uuser,String friend){
+        position_info pos_info = new position_info(0,0,0);
+        if(ff.existsByUuserAndFriend(uuser,friend)&&uu.findByName(friend).getShare_position()){
+            Uuser frid = uu.findByName(friend);
+            pos_info = new position_info(frid.getX_p(),frid.getY_p(),frid.getFloor());
+        }
+        return  pos_info;
+    }
 }

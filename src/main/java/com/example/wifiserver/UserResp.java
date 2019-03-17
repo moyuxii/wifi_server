@@ -19,9 +19,9 @@ public interface UserResp extends CrudRepository<Uuser,Integer> {
     @Query(value = "update uuser set share_position=false where name=?1 ", nativeQuery = true)
     @Modifying
     void clo_share(String name);
-    @Query(value = "update uuser set x_p = ?1 , y_p = ?2 where name=?3 ", nativeQuery = true)
+    @Query(value = "update uuser set x_p = ?1 , y_p = ?2 , floor = ?3 where name=?4 ", nativeQuery = true)
     @Modifying
-    void update_position(int x_p,int y_p,String name);
+    void update_position(int x_p,int y_p,int floor,String name);
 
 
 }

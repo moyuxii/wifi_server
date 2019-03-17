@@ -1,14 +1,23 @@
 package com.example.wifiserver;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class friendship {
+    @GeneratedValue(strategy= GenerationType.IDENTITY)  /*按主键自增*/
     @Id
     private Integer id;
     private String uuser;
     private String friend;
+
+    friendship(String uuser,String friend){
+        this.uuser = uuser;
+        this.friend =friend;
+    }
+    friendship(){};
 
     public void setId(int id) {
         this.id = id;
